@@ -7,7 +7,13 @@ import plotly.express as px
 import streamlit as st
 
 from sentiment_analyzer.data import get_news, get_price_history, normalize_ticker
-from sentiment_analyzer.sentiment import average_sentiment, label_score, score_headlines
+from sentiment_analyzer.sentiment import (
+    average_sentiment,
+    get_sentiment_analyzer,
+    label_score,
+    score_headlines,
+    sentiment_engine_name,
+)
 
 st.set_page_config(page_title="Stock Sentiment Analyzer", page_icon="📈", layout="wide")
 st.title("📈 Stock Sentiment Analyzer")
@@ -33,13 +39,16 @@ else:
         ticker = normalize_ticker(symbol)
         with st.spinner(f"Getting data for {ticker}…"):
             prices = get_price_history(ticker, periods[period_label])
-            news = score_headlines(get_news(ticker))
+            analyzer = get_sentiment_analyzer()
+            news = score_headlines(get_news(ticker), analyzer=analyzer)
     except (ValueError, OSError, KeyError) as error:
         st.error(str(error))
     else:
         latest_close = float(prices["Close"].iloc[-1])
         change = float(prices["Close"].pct_change().iloc[-1] * 100)
         score = average_sentiment(news)
+        st.caption(f"Sentiment engine active: **{sentiment_engine_name(analyzer)}**")
+
         first, second, third = st.columns(3)
         first.metric("Latest close", f"${latest_close:,.2f}", f"{change:+.2f}% today")
         second.metric("News headlines", len(news))
@@ -68,4 +77,4 @@ else:
                 st.caption(f"{article.publisher} · {article.published_at or 'Publication date unavailable'}")
 
 st.divider()
-st.caption("Sentiment uses VADER's rule-based compound score. It measures headline tone, not investment value. This app is for education only—not financial advice.")
+st.caption("Sentiment uses FinBERT when available and automatically falls back to VADER. It measures headline tone, not investment value. This app is for education only—not financial advice.")
