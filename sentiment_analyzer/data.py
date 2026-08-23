@@ -51,16 +51,20 @@ def get_news(symbol: str, limit: int = 10) -> pd.DataFrame:
     articles = yf.Ticker(ticker).news or []
     records: list[dict[str, Any]] = []
     for article in articles[:limit]:
-        content = article.get("content", article)
+        content_value = article.get("content", article)
+        content = content_value if isinstance(content_value, dict) else {}
         title = content.get("title") or article.get("title")
         if not title:
             continue
-        provider = content.get("provider", {})
+        provider_value = content.get("provider", {})
+        provider = provider_value if isinstance(provider_value, dict) else {}
+        canonical_url_value = content.get("canonicalUrl", {})
+        canonical_url = canonical_url_value if isinstance(canonical_url_value, dict) else {}
         records.append(
             {
                 "title": title,
                 "publisher": provider.get("displayName") or article.get("publisher") or "Unknown source",
-                "link": content.get("canonicalUrl", {}).get("url") or article.get("link") or "",
+                "link": canonical_url.get("url") or article.get("link") or "",
                 "published_at": _published_at(content.get("pubDate") or article.get("providerPublishTime")),
             }
         )
