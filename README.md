@@ -1,5 +1,5 @@
 # Stock Sentiment Analyzer
-https://sathvika-stock-sentiment-analyzer.streamlit.app
+[Open the live app.](https://sathvika-stock-sentiment-analyzer.streamlit.app)
 
 A beginner-friendly [Streamlit](https://streamlit.io/) dashboard that shows a stock's recent price history alongside the sentiment of recent Yahoo Finance news headlines.
 

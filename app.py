@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import pandas as pd
 import plotly.express as px
 import streamlit as st
 
@@ -10,7 +9,6 @@ from sentiment_analyzer.data import get_news, get_price_history, normalize_ticke
 from sentiment_analyzer.sentiment import (
     average_sentiment,
     get_sentiment_analyzer,
-    label_score,
     score_headlines,
     sentiment_engine_name,
 )
@@ -23,7 +21,7 @@ with st.sidebar:
     st.header("Choose a stock")
     symbol = st.text_input("Ticker symbol", value="AAPL", help="Examples: AAPL, MSFT, TSLA, NVDA")
     period_label = st.selectbox("Price history", ["1 month", "3 months", "6 months", "1 year"], index=2)
-    analyze = st.button("Analyze", type="primary", use_container_width=True)
+    analyze = st.button("Analyze", type="primary", width="stretch")
 
 periods = {"1 month": "1mo", "3 months": "3mo", "6 months": "6mo", "1 year": "1y"}
 
@@ -57,7 +55,7 @@ else:
         st.subheader(f"{ticker} closing price")
         st.plotly_chart(
             px.line(prices, x="Date", y="Close", title=f"{period_label.title()} adjusted closing price"),
-            use_container_width=True,
+            width="stretch",
         )
 
         st.subheader("News sentiment")
@@ -69,7 +67,7 @@ else:
             st.plotly_chart(
                 px.bar(chart_data, x="sentiment", y="headlines", color="sentiment",
                        color_discrete_map={"Positive": "#2ca02c", "Neutral": "#7f7f7f", "Negative": "#d62728"}),
-                use_container_width=True,
+                width="stretch",
             )
             for article in news.itertuples(index=False):
                 label = f"{article.sentiment} ({article.compound:+.2f})"
